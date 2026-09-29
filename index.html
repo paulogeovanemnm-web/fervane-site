@@ -46,8 +46,22 @@
   nav a:hover { color: #fff; }
 
   /* ── Abertura ─────────────────────────────────────── */
-  .abertura { background: var(--marinho); color: #fff; padding: 56px 0 72px; overflow: hidden; }
-  .abertura .miolo { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; }
+  /* A arte ocupa a faixa inteira; o texto flutua num cartão escuro por cima. */
+  .abertura { position: relative; display: flex; align-items: center; overflow: hidden;
+              min-height: clamp(560px, 50vw, 760px); padding: 56px 0;
+              background: var(--marinho); color: #fff; }
+  .abertura-fundo { position: absolute; inset: 0; display: block; width: 100%; height: 100%;
+                    object-fit: cover; object-position: 62% 50%; }
+  /* Véu à esquerda: faz o cartão "descolar" da arte sem apagar o resto dela. */
+  .abertura::before { content: ""; position: absolute; inset: 0; z-index: 1;
+                      background: linear-gradient(90deg, rgba(13,20,36,.7) 0%, rgba(13,20,36,.35) 40%, rgba(13,20,36,0) 65%); }
+  .abertura .miolo { position: relative; z-index: 2; width: 100%; }
+  /* Opacidade .76 = leitura garantida mesmo sobre um ponto BRANCO da arte e
+     sem o desfoque (navegador antigo) — o teste do site confere a conta. */
+  .abertura-cartao { max-width: 570px; padding: 38px 38px 36px; border-radius: 20px;
+                     background: rgba(13, 20, 36, .76); border: 1px solid rgba(255,255,255,.14);
+                     -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2);
+                     box-shadow: 0 30px 80px -30px rgba(0,0,0,.8); }
   .abertura h1 { font-size: 44px; line-height: 1.12; margin: 0 0 18px; font-weight: 800; }
   .abertura h1 em { font-style: normal; color: #7fb0ff; }
   .abertura p { font-size: 18px; color: var(--claro-no-escuro); margin: 0 0 28px; max-width: 540px; }
@@ -58,7 +72,6 @@
   .botao.cheio:hover { background: #3b7be6; }
   .botao.vazado { color: #fff; border: 1px solid rgba(255,255,255,.28); }
   .botao.vazado:hover { border-color: #fff; }
-  .abertura img { width: 100%; height: auto; border-radius: 16px; display: block; }
 
   /* ── Seções ───────────────────────────────────────── */
   section { padding: 72px 0; }
@@ -264,8 +277,14 @@
     .linha { width: 100%; max-width: 560px; margin-top: 6px; }
   }
   @media (max-width: 860px) {
-    .abertura .miolo, .empresa-grade { grid-template-columns: 1fr; }
-    .abertura { padding: 40px 0 52px; }
+    .empresa-grade { grid-template-columns: 1fr; }
+    /* No celular a arte vem inteira em cima e o cartão sobe um pouco sobre ela:
+       como fundo, ela seria cortada até sobrar só um pedaço do tablet. */
+    .abertura { display: block; min-height: 0; padding: 0 0 44px; }
+    .abertura::before { display: none; }
+    .abertura-fundo { position: static; height: auto; }
+    .abertura-cartao { max-width: none; margin-top: -36px; padding: 28px 24px 26px;
+                       background: rgba(13, 20, 36, .94); }
     .abertura h1 { font-size: 34px; }
     section { padding: 56px 0; }
     .titulo h2 { font-size: 26px; }
@@ -324,8 +343,11 @@
 </header>
 
 <div class="abertura" id="inicio">
+  <img class="abertura-fundo" src="abertura.webp" srcset="abertura-900.webp 900w, abertura.webp 1685w"
+       sizes="100vw" width="1685" height="933" fetchpriority="high"
+       alt="Ilustração do FerVane em um restaurante: atendimento pelo WhatsApp no celular, PDV no tablet, roteirização das entregas e rastreamento do entregador">
   <div class="miolo">
-    <div>
+    <div class="abertura-cartao">
       <h1>Gestão completa para quem <em>vende e entrega</em>.</h1>
       <p>PDV, caixa, estoque, cardápio digital, atendimento pelo WhatsApp e
       roteirização de entregas num sistema só — feito para restaurantes, lojas
@@ -335,8 +357,6 @@
         <a class="botao vazado" href="#rastreamento">Ver funcionando</a>
       </div>
     </div>
-    <img src="logo.jpg" width="900" height="681"
-         alt="FerVane Routes — mapa com rotas de entrega e o alfinete da marca">
   </div>
 </div>
 
